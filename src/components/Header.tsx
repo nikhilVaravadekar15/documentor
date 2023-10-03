@@ -1,8 +1,8 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Button } from './ui/button'
-import { ArrowBigRight } from 'lucide-react'
+import SignupModal from '@/components/ot/SignupModal'
+import SigninModal from '@/components/ot/SigninModal'
 
 export default function Header() {
     return (
@@ -13,7 +13,7 @@ export default function Header() {
                         <Image
                             src={"/apple-touch-icon.png"}
                             className="mr-3"
-                            alt="Flowbite Logo"
+                            alt="documentor-logo"
                             width={32}
                             height={32}
                             draggable={false}
@@ -34,17 +34,9 @@ export default function Header() {
                             </Link>
                         </li>
                     </ul>
-                    <div className="flex items-center">
-                        <Link
-                            href="#"
-                            className="text-gray-800 dark:text-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-400 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-                        >
-                            Log in
-                        </Link>
-                        <Button className="bg-blue-400 hover:bg-blue-500">
-                            Get started
-                            <ArrowBigRight size={20} />
-                        </Button>
+                    <div className="flex gap-1 items-center justify-center">
+                        <SigninModal />
+                        <SignupModal />
                     </div>
                 </div>
             </nav>

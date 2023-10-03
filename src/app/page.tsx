@@ -1,7 +1,4 @@
 import {
-  ArrowBigRight,
-} from 'lucide-react'
-import {
   Card,
   CardDescription,
   CardHeader,
@@ -9,8 +6,8 @@ import {
 } from "@/components/ui/card"
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Button } from "@/components/ui/button";
 import { TUsage, usageSectionData, usecaseSectionData } from '@/data';
+import SignupModal from '@/components/ot/SignupModal';
 
 
 export default function Home() {
@@ -70,10 +67,7 @@ function HeroSection() {
             You can ask questions, get summaries, find information, & more securly and privately.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-2">
-            <Button className="bg-blue-400 hover:bg-blue-500">
-              Get started
-              <ArrowBigRight size={20} />
-            </Button>
+            <SignupModal />
           </div>
         </div>
       </div>
