@@ -4,16 +4,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import Header from '@/components/Header';
+import Navigationbar from "@/components/Header";
 import Footer from '@/components/Footer';
 import { TUsage, usageSectionData, usecaseSectionData } from '@/data';
 import SignupModal from '@/components/ot/SignupModal';
 
 
+
 export default function Home() {
   return (
     <>
-      <Header />
+      <Navigationbar />
       <main className="container flex flex-col items-center justify-center">
         <HeroSection />
         <UsageSection />

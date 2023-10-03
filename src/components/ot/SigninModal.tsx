@@ -1,9 +1,6 @@
 "use client"
 
 import {
-    Github
-} from 'lucide-react'
-import {
     Dialog,
     DialogContent,
     DialogDescription,

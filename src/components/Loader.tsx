@@ -10,9 +10,3 @@ export default function LargeLoadingSpinner() {
         </div>
     )
 }
-
-export function SmallLoadingSpinner() {
-    return (
-        <div className="spin"></div>
-    )
-}

@@ -10,16 +10,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import React from 'react'
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { pricingPlansData } from '@/data/pricing';
 import { Button } from '@/components/ui/button';
+import Navigationbar from '@/components/Header';
 
 
 export default function PricingPage() {
   return (
     <>
-      <Header />
+      <Navigationbar />
       <main className="container mt-8 mb-20 flex flex-col items-center justify-center">
         <h1 className="text-4xl font-black my-4 flex gap-3 items-center justify-center">
           Pricing

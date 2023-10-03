@@ -88,12 +88,23 @@
   }
 }
 
-/* width */
+/* scrollbar width */
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
+/* scrollbar Handle */
+*::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: #888;
+}
+
+/* scrollbar track */
+*::-webkit-scrollbar-track {
+  border-radius: 8px;
+  box-shadow: inset 0 0 4px grey;
+}
 
 /* loader */
 .lds-ring {
@@ -135,29 +146,5 @@
 
   100% {
     transform: rotate(360deg);
-  }
-}
-
-/* LoadingSpinner */
-.spin {
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(255, 255, 255, .3);
-  border-radius: 50%;
-  border-top-color: rgb(0, 149, 255);
-  animation: spin 1s ease-in-out infinite;
-  -webkit-animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  to {
-    -webkit-transform: rotate(360deg);
-  }
-}
-
-@-webkit-keyframes spin {
-  to {
-    -webkit-transform: rotate(360deg);
   }
 }

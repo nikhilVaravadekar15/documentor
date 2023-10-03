@@ -1,5 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
   title: "Documentor | Chat with your pdf documents privately",
@@ -33,6 +34,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="overflow-x-hidden">
         {children}
+        <Toaster />
       </body>
     </html>
   )
