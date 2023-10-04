@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { useResizeDetector } from "react-resize-detector"
+import LoadingSpinner from "./LoadingSpinner"
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
@@ -61,7 +62,7 @@ export default function PdfRenderer({ url }: PdfRendererProps) {
 
     const formik = useFormik<TCustomPageValidator>({
         initialValues: {
-            page: 1
+            page: currentPage!
         },
         validate: (values: TCustomPageValidator) => {
             let errors: Partial<{ page: string }> = {};
@@ -95,9 +96,9 @@ export default function PdfRenderer({ url }: PdfRendererProps) {
                                         currentPage === totalPageNumber
                                     }
                                     onClick={() => {
-                                        setCurrPage((prev) =>
-                                            prev + 1 > totalPageNumber! ? totalPageNumber! : prev + 1
-                                        )
+                                        setCurrPage((prev: number) => {
+                                            return prev + 1 > totalPageNumber! ? totalPageNumber! : prev + 1
+                                        })
                                     }}
                                 >
                                     <ChevronDown className="h-4 w-4" />
@@ -114,7 +115,7 @@ export default function PdfRenderer({ url }: PdfRendererProps) {
                             name="page"
                             type="number"
                             max={totalPageNumber}
-                            defaultValue={currentPage}
+                            value={formik.values.page}
                             onChange={formik.handleChange}
                             className={cn(
                                 "focus-visible:ring-0 w-24 h-9",
@@ -140,9 +141,9 @@ export default function PdfRenderer({ url }: PdfRendererProps) {
                                     aria-label="previous-page"
                                     disabled={currentPage <= 1}
                                     onClick={() => {
-                                        setCurrPage((prev) =>
-                                            prev - 1 > 1 ? prev - 1 : 1
-                                        )
+                                        setCurrPage((prev: number) => {
+                                            return prev - 1 > 1 ? prev - 1 : 1
+                                        })
                                     }}
                                 >
                                     <ChevronUp className="h-4 w-4" />
@@ -229,9 +230,7 @@ export default function PdfRenderer({ url }: PdfRendererProps) {
                                 })
                             }}
                             loading={
-                                <div className="flex justify-center">
-                                    <Loader2 color="rgb(96,165,250)" className="my-32 h-12 w-12 animate-spin" />
-                                </div>
+                                <LoadingSpinner classname="my-32" />
                             }
                         >
                             {
@@ -256,9 +255,7 @@ export default function PdfRenderer({ url }: PdfRendererProps) {
                                     setRenderedScale(scale)
                                 }
                                 loading={
-                                    <div className="flex justify-center">
-                                        <Loader2 color="rgb(96,165,250)" className="my-32 h-6 w-6 animate-spin" />
-                                    </div>
+                                    <LoadingSpinner classname="my-32" />
                                 }
                             />
                         </Document>
