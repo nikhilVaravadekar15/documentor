@@ -8,10 +8,18 @@ import Navigationbar from "@/components/Header";
 import Footer from '@/components/Footer';
 import { TUsage, usageSectionData, usecaseSectionData } from '@/data';
 import SignupModal from '@/components/ot/SignupModal';
+import { Session } from "next-auth";
+import { getAuthSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 
+export default async function Home() {
+  const session: Session | null = await getAuthSession()
 
-export default function Home() {
+  if (session) {
+    redirect("/documents")
+  }
+
   return (
     <>
       <Navigationbar />

@@ -2,9 +2,19 @@ import React from 'react'
 import Header from '@/components/Header';
 import FileDropzone from '@/components/FileDropzone';
 import Opencard from '@/components/Opencard';
+import Footer from '@/components/Footer';
+import { getAuthSession } from '@/lib/auth';
+import { Session } from 'next-auth';
+import { redirect } from 'next/navigation';
 
 
-export default function DocumentsPage() {
+export default async function DocumentsPage() {
+  const session: Session | null = await getAuthSession()
+
+  if (!session) {
+    redirect("/")
+  }
+
   return (
     <div className="h-screen w-screen">
       <header className="z-50 h-[21%] md:h-[8%] border flex items-center justify-center">
@@ -30,6 +40,7 @@ export default function DocumentsPage() {
           }
         </div>
       </main>
+      <Footer />
     </div>
   )
 }

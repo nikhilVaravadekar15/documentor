@@ -11,9 +11,11 @@ import {
 import React from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { useSession, signIn } from "next-auth/react"
 
 
 export default function SigninModal() {
+    const { data: session } = useSession()
 
     return (
         <Dialog>
@@ -54,6 +56,9 @@ export default function SigninModal() {
                             <div className="mt-3 space-y-3">
                                 <Button
                                     asChild type="button"
+                                    onClick={() => signIn("google", {
+                                        callbackUrl: `${process.env.NEXT_PUBLIC_BASE_URL!}/documents`
+                                    })}
                                     className="w-full flex gap-2 items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 cursor-pointer hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
                                 >
                                     <div>

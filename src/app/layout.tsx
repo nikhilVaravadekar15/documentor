@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Toaster } from "@/components/ui/toaster"
+import AuthProvider from '@/components/provider/AuthProvider'
 
 export const metadata: Metadata = {
   title: "Documentor | Chat with your pdf documents privately",
@@ -32,10 +33,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="overflow-x-hidden">
-        {children}
-        <Toaster />
-      </body>
+      <AuthProvider>
+        <body className="overflow-x-hidden">
+          {children}
+          <Toaster />
+        </body>
+      </AuthProvider>
     </html>
   )
 }

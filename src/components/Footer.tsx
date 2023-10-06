@@ -1,10 +1,35 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Session } from 'next-auth'
+import { getAuthSession } from '@/lib/auth'
 
 
-export default function Footer() {
-    return (
+export default async function Footer() {
+    const session: Session | null = await getAuthSession()
+
+    return session ? (
+        <section className="relative overflow-hidden py-6 shadow-[1px_1px_16px_2px_rgba(0,0,0,0.3)]">
+            <div className="container flex h-full w-full flex-col items-center justify-center md:flex-row md:justify-between">
+                <div className="flex items-center">
+                    <Image
+                        src={"/apple-touch-icon.png"}
+                        className="mr-3"
+                        alt="Flowbite Logo"
+                        width={32}
+                        height={32}
+                        draggable={false}
+                    />
+                    <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
+                        Documentor
+                    </span>
+                </div>
+                <p className="text-sm text-gray-600">
+                    &copy; Copyright 2023. All Rights Reserved by Documentor.
+                </p>
+            </div>
+        </section>
+    ) : (
         <section className="relative overflow-hidden py-10 shadow-[35px_35px_60px_15px_rgba(0,0,0,0.3)]">
             <div className="relative z-10 mx-auto max-w-7xl px-4">
                 <div className="-m-6 flex flex-wrap">

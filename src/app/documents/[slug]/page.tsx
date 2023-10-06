@@ -2,13 +2,21 @@ import React from 'react'
 import Header from '@/components/Header';
 import Qna from '@/components/Qna';
 import PdfRenderer from '@/components/PdfRenderer';
+import { getAuthSession } from '@/lib/auth';
+import { Session } from 'next-auth';
+import { redirect } from 'next/navigation';
 
 type TDocumentPageProps = {
   params: { slug: string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
-export default function DocumentPage({ params }: TDocumentPageProps) {
+export default async function DocumentPage({ params }: TDocumentPageProps) {
+  const session: Session | null = await getAuthSession()
+
+  if (!session) {
+    redirect("/")
+  }
 
   return (
     <div className="h-screen w-screen">
