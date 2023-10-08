@@ -5,6 +5,10 @@ import { neon, neonConfig } from '@neondatabase/serverless';
 // create the connection
 neonConfig.fetchConnectionCache = true;
 
+if (!process.env.NEON_DATABASE_URL!) {
+    throw new Error("Database url not found")
+}
+
 export const sql = neon(process.env.NEON_DATABASE_URL!);
 export const db = drizzle(
     sql,

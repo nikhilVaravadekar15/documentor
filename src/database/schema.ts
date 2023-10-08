@@ -3,17 +3,36 @@ import {
     pgTable,
     text,
     primaryKey,
-    integer
+    integer,
+    serial,
+    pgEnum,
 } from "drizzle-orm/pg-core"
+import { relations } from "drizzle-orm";
 import type { AdapterAccount } from "@auth/core/adapters"
 
-export const users = pgTable("user", {
-    id: text("id").notNull().primaryKey(),
-    name: text("name"),
-    email: text("email").notNull(),
-    emailVerified: timestamp("emailVerified", { mode: "date" }),
-    image: text("image")
-})
+
+export const roleEnum = pgEnum(
+    "role",
+    ["gpt", "user"]
+);
+
+export const users = pgTable(
+    "user",
+    {
+        id: text("id").notNull().primaryKey(),
+        name: text("name"),
+        email: text("email").notNull(),
+        emailVerified: timestamp("emailVerified", { mode: "date" }),
+        image: text("image"),
+    }
+);
+
+export const usersRelations = relations(
+    users,
+    ({ many }) => ({
+        documents: many(documents),
+    })
+);
 
 export const accounts = pgTable(
     "account",
@@ -35,15 +54,18 @@ export const accounts = pgTable(
     (account) => ({
         compoundKey: primaryKey(account.provider, account.providerAccountId)
     })
-)
+);
 
-export const sessions = pgTable("session", {
-    sessionToken: text("sessionToken").notNull().primaryKey(),
-    userId: text("userId")
-        .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
-    expires: timestamp("expires", { mode: "date" }).notNull()
-})
+export const sessions = pgTable(
+    "session",
+    {
+        sessionToken: text("sessionToken").notNull().primaryKey(),
+        userId: text("userId")
+            .notNull()
+            .references(() => users.id, { onDelete: "cascade" }),
+        expires: timestamp("expires", { mode: "date" }).notNull()
+    }
+);
 
 export const verificationTokens = pgTable(
     "verificationToken",
@@ -55,4 +77,27 @@ export const verificationTokens = pgTable(
     (vt) => ({
         compoundKey: primaryKey(vt.identifier, vt.token)
     })
-)
+);
+
+export const documents = pgTable(
+    "documents",
+    {
+        id: text("id").primaryKey().unique().notNull(),
+        documentname: text("documentname").notNull(),
+        url: text("url").notNull(),
+        key: text("key").notNull(),
+        created_at: timestamp("created_at").notNull().defaultNow(),
+        userid: text("userid").notNull().references(() => users.id)
+    }
+);
+
+export const messages = pgTable(
+    "messages",
+    {
+        id: serial("id").primaryKey().notNull(),
+        messageid: text("messageid").notNull().references(() => documents.id),
+        content: text("content").notNull(),
+        role: roleEnum("role").notNull(),
+        created_at: timestamp("created_at").notNull().defaultNow(),
+    }
+);
