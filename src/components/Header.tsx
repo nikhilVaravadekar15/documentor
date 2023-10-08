@@ -14,11 +14,11 @@ export default async function Navigationbar() {
             <div className="flex gap-4 flex-wrap flex-col items-center justify-center mx-auto max-w-screen-xl md:flex-row md:justify-between">
                 <Link
                     href={session ? "/documents" : "/"}
-                    className="flex items-center cursor-pointer"
+                    className="group flex items-center cursor-pointer"
                 >
                     <Image
                         src={"/apple-touch-icon.png"}
-                        className="mr-3"
+                        className="mr-3 group-hover:animate-spin"
                         alt="documentor-logo"
                         width={32}
                         height={32}

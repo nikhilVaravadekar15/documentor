@@ -1,20 +1,30 @@
 "use client"
 
 import {
+    PlusCircle,
     UploadCloud
-} from "lucide-react"
+} from 'lucide-react'
 import {
     Card,
     CardHeader,
     CardContent,
 } from "@/components/ui/card"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import React, { useCallback } from 'react'
 import { Input } from "./ui/input"
 import { useToast } from "./ui/use-toast"
 import { useDropzone } from 'react-dropzone'
+import { Button } from '@/components/ui/button'
 
 
 export default function FileDropzone() {
+
     const { toast } = useToast()
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -34,32 +44,48 @@ export default function FileDropzone() {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
 
     return (
-        <Card
-            {...getRootProps()}
-            className="w-fit h-fit border outline-dotted shadow-sm cursor-pointer hover:shadow-lg hover:outline-double"
-        >
-            <CardHeader>
-                <Input {...getInputProps()} />
-            </CardHeader>
-            <CardContent>
-                <div className="w-full flex flex-col items-center justify-center">
-                    <UploadCloud />
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {
-                            isDragActive ? (
-                                <span className="font-semibold">{"Drop the files here ..."}</span>
-                            ) : (
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button
+                    variant={"outline"}
+                    className="group w-[256px] h-[169px] outline outline-gray-600 shadow-sm cursor-pointer hover:shadow-md hover:outline-gray-700"
+                >
+                    <PlusCircle size={32} className="text-gray-600 group-hover:text-gray-700" />
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl h-[50%]">
+                <DialogHeader>
+                    <DialogDescription asChild>
+                        <Card
+                            {...getRootProps()}
+                            className="w-full h-full flex flex-col items-center justify-center border outline-dotted cursor-pointer hover:outline-double"
+                        >
+                            <CardHeader>
+                                <Input {...getInputProps()} />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="w-full flex flex-col items-center justify-center">
+                                    <UploadCloud />
+                                    <p className="text-base">
+                                        {
+                                            isDragActive ? (
+                                                <span className="font-semibold">{"Drop the files here ..."}</span>
+                                            ) : (
 
-                                <span className="flex gap-1 flex-col items-center justify-center">
-                                    <span className="font-semibold">Click to upload</span>
-                                    or
-                                    <span className="font-semibold">{"Drag 'n' drop some files here"}</span>
-                                </span>
-                            )
-                        }
-                    </p>
-                </div>
-            </CardContent>
-        </Card>
+                                                <span className="flex gap-1 flex-col items-center justify-center">
+                                                    <span className="font-semibold">Click to upload</span>
+                                                    or
+                                                    <span className="font-semibold">{"Drag 'n' drop some files here"}</span>
+                                                </span>
+                                            )
+                                        }
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </DialogDescription>
+                </DialogHeader>
+            </DialogContent>
+        </Dialog>
     )
 }

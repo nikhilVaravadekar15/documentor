@@ -38,7 +38,7 @@ function HeroSection() {
   return (
     <div className="relative isolate px-6 pt-16 lg:px-8">
       <div className="relative mx-auto max-w-4xl py-24">
-        <div className="absolute -top-[6rem] -z-10 transform-gpu overflow-hidden blur-3xl">
+        <div className="absolute -top-[2rem] -z-10 transform-gpu overflow-hidden blur-3xl md:left-20 md:-top-[2rem] border">
           <svg
             className="relative left-[calc(50%-11rem)] -z-10 h-[21.1875rem] max-w-none -translate-x-1/2 rotate-[30deg] sm:left-[calc(50%-30rem)] sm:h-[42.375rem]"
             viewBox="0 0 1155 678"
@@ -64,13 +64,13 @@ function HeroSection() {
             </defs>
           </svg>
         </div>
-        <div className="text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-4xl font-bold text-center tracking-tight text-gray-900 sm:text-6xl">
             Chat with any
             <span className="mx-2 text-blue-400 sm:mx-4">PDF</span>
             document
           </h1>
-          <p className="mt-6 text-lg leading-8 text-gray-800">
+          <p className="mt-6 w-[80%] text-base text-center leading-6 text-gray-800 md:w-full md:text-lg">
             From legal agreements to financial reports, documentor brings your pdf documents to life.
             <br />
             You can ask questions, get summaries, find information, & more securly and privately.
