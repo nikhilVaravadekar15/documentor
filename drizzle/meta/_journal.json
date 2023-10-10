@@ -15,6 +15,13 @@
       "when": 1696752458128,
       "tag": "0001_condemned_kylun",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1696927447856,
+      "tag": "0002_wet_rick_jones",
+      "breakpoints": true
     }
   ]
 }

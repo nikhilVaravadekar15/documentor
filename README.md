@@ -30,6 +30,7 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
     ```
         pnpm drizzle-kit generate:pg # to generate migrations
         pnpm drizzle-kit push:pg # to push migrations to neon
+        pnpm drizzle-kit drop # to drop migrations
     ```
 
 ## Deploy on Vercel

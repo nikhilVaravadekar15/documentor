@@ -2,30 +2,34 @@ import { db } from "@/database";
 import { NextAuthOptions, getServerSession } from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import GoogleProvider from "next-auth/providers/google";
-
-import type { JWT } from 'next-auth/jwt'
+import type { JWT, JWTEncodeParams } from 'next-auth/jwt'
 import type { DefaultSession, Session, User } from 'next-auth'
+import { eq } from "drizzle-orm";
+import { users } from "@/database/schema";
+
 
 
 declare module 'next-auth' {
     interface Session extends DefaultSession {
         user: User & {
             id: string
-            username?: string | null
         }
     }
 
     interface jwt extends JWT {
         id: string
-        username?: string | null
     }
 }
 
 export const authOptions: NextAuthOptions = {
     adapter: DrizzleAdapter(db),
+    session: {
+        strategy: "jwt"
+    },
     pages: {
         "signIn": "/"
     },
+    secret: process.env.NEXTAUTH_SECRET!,
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -39,13 +43,11 @@ export const authOptions: NextAuthOptions = {
                 session.user.name = token.name as string
                 session.user.email = token.email as string
                 session.user.image = token.picture as string
-                session.user.username = token.username as string
             }
             return session
         },
         async signIn({ account, user, email, profile }) {
             // check db in user
-
             // try {
             //     if (!dbUser) {
             //         sendOnboardingMail
@@ -55,7 +57,6 @@ export const authOptions: NextAuthOptions = {
             // } catch (error: any) {
             //     console.log(error);
             // }
-
             return true
         }
 

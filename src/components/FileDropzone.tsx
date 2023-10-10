@@ -26,6 +26,7 @@ import { useDropzone } from 'react-dropzone'
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from './LoadingSpinner'
 import s3WebService from "@/service/s3WebService"
+import { uploadFile } from '@/http'
 
 
 export default function FileDropzone() {
@@ -37,14 +38,10 @@ export default function FileDropzone() {
         let file: File = acceptedFiles[0]
         if (file.type === "application/pdf") {
             try {
-                const data = await s3WebService.upload(file)
-                if (data?.file_key && data?.file_name) {
-                    if (!data.error) {
-                        setIsUploaded(true)
-                    } else {
-                        throw new Error(data.error)
-                    }
-                }
+                const response = await uploadFile(file)
+                // console.log(response.data)
+
+
             } catch (error) {
                 toast({
                     variant: "destructive",

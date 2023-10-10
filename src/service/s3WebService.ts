@@ -1,7 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { AWSError, config, S3 } from 'aws-sdk';
 import { Progress } from 'aws-sdk/lib/request';
-import { error } from 'console';
 
 class S3WebService {
     private s3: S3;
@@ -32,22 +31,23 @@ class S3WebService {
     async upload(file: File) {
         let error: AWSError | null = null
         const file_key: string = this.uploadPath + Date.now().toString() + file.name.replace(" ", "-")
+        const bytes: ArrayBuffer = await file!.arrayBuffer()
+        const fileBuffer: Buffer = Buffer.from(bytes)
 
         const uploaded = this.s3.putObject({
             Bucket: this.bucket,
             Key: file_key,
-            Body: file
+            Body: fileBuffer
         }).on("httpUploadProgress", (progress: Progress) => {
             console.log(`Uploading to aws S3 ${progress.loaded * 100 / progress.total}`)
         }).promise()
 
         await uploaded.then((result) => {
             console.log("successfully uploaded to aws s3")
-        }).catch((err: AWSError) => {
-            console.log(err)
-            error = err
+        }).catch((error: AWSError) => {
+            console.error(error)
+            error = error
         });
-
         return await Promise.resolve({
             file_key: file_key,
             file_name: file.name,
@@ -56,7 +56,7 @@ class S3WebService {
 
     }
 
-    async getS3Url(file_key: string) {
+    getS3Url(file_key: string) {
         return `https://${this.bucket}.s3.${this.region}.amazonaws.com/${this.uploadPath}${file_key}`
     }
 }

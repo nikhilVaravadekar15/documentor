@@ -6,14 +6,19 @@ import {
     integer,
     serial,
     pgEnum,
+    uuid,
 } from "drizzle-orm/pg-core"
-import { relations } from "drizzle-orm";
 import type { AdapterAccount } from "@auth/core/adapters"
 
 
 export const roleEnum = pgEnum(
     "role",
     ["gpt", "user"]
+);
+
+export const tierEnum = pgEnum(
+    "tier",
+    ["free", "premium"]
 );
 
 export const users = pgTable(
@@ -24,14 +29,8 @@ export const users = pgTable(
         email: text("email").notNull(),
         emailVerified: timestamp("emailVerified", { mode: "date" }),
         image: text("image"),
+        tier: tierEnum("tier").notNull().default("free")
     }
-);
-
-export const usersRelations = relations(
-    users,
-    ({ many }) => ({
-        documents: many(documents),
-    })
 );
 
 export const accounts = pgTable(
@@ -82,7 +81,7 @@ export const verificationTokens = pgTable(
 export const documents = pgTable(
     "documents",
     {
-        id: text("id").primaryKey().unique().notNull(),
+        id: uuid("id").defaultRandom().primaryKey().unique().notNull(),
         documentname: text("documentname").notNull(),
         url: text("url").notNull(),
         key: text("key").notNull(),
@@ -95,7 +94,7 @@ export const messages = pgTable(
     "messages",
     {
         id: serial("id").primaryKey().notNull(),
-        messageid: text("messageid").notNull().references(() => documents.id),
+        documentid: uuid("documentid").notNull().references(() => documents.id),
         content: text("content").notNull(),
         role: roleEnum("role").notNull(),
         created_at: timestamp("created_at").notNull().defaultNow(),
