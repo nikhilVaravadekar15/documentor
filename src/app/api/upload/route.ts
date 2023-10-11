@@ -1,11 +1,10 @@
 import path from "path"
-import { db } from "@/database";
-import { documents, users } from "@/database/schema";
+import { db } from "@/database/pg/index";
+import { documents, users } from "@/database/pg/schema";
 import { getAuthSession } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import s3WebService from "@/service/s3WebService";
-import { FullQueryResults } from "@neondatabase/serverless";
 
 
 export async function POST(nextRequest: NextRequest) {
@@ -84,10 +83,13 @@ export async function POST(nextRequest: NextRequest) {
                 throw new Error()
             }
 
-            console.log(docWritten)
+            // 7. return file details to use
             return new NextResponse(
                 JSON.stringify({
                     id: docWritten.id,
+                    file_key: docWritten.key,
+                    file_name: docWritten.documentname,
+                    created_at: docWritten.created_at!
                 }),
                 {
                     status: 200,
@@ -95,12 +97,6 @@ export async function POST(nextRequest: NextRequest) {
             );
 
         }
-
-        // then read file again from s3
-        // then read pdf content (PDFloader)
-        // then create vector embedding 
-        // return 
-
 
     } catch (error: any) {
         console.error(error)
@@ -115,14 +111,4 @@ export async function POST(nextRequest: NextRequest) {
             }
         )
     }
-
-
-    return new NextResponse(
-        JSON.stringify({
-            message: "Hello World!",
-        }),
-        {
-            status: 200,
-        }
-    );
 }

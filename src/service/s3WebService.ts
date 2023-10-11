@@ -59,6 +59,15 @@ class S3WebService {
     getS3Url(file_key: string) {
         return `https://${this.bucket}.s3.${this.region}.amazonaws.com/${this.uploadPath}${file_key}`
     }
+
+    async getFileFroms3(file_key: string) {
+        const file = await this.s3.getObject({
+            Bucket: this.bucket,
+            Key: file_key
+        }).promise()
+        console.log(file)
+        return file.Body as Buffer;
+    }
 }
 
 export default new S3WebService()

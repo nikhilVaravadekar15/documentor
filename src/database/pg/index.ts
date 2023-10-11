@@ -1,4 +1,4 @@
-import * as schema from "@/database/schema"
+import * as schema from '@/database/pg/schema'
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon, neonConfig } from '@neondatabase/serverless';
 

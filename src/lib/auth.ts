@@ -1,11 +1,9 @@
-import { db } from "@/database";
+import { db } from "@/database/pg/index";
 import { NextAuthOptions, getServerSession } from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import GoogleProvider from "next-auth/providers/google";
 import type { JWT, JWTEncodeParams } from 'next-auth/jwt'
 import type { DefaultSession, Session, User } from 'next-auth'
-import { eq } from "drizzle-orm";
-import { users } from "@/database/schema";
 
 
 

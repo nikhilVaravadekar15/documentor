@@ -7,7 +7,7 @@ dotenv.config({
 
 
 export default {
-    schema: "./src/database/schema.ts",
+    schema: "./src/database/pg/schema.ts",
     driver: "pg",
     out: "./drizzle",
     dbCredentials: {
