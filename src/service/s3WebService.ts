@@ -65,7 +65,6 @@ class S3WebService {
             Bucket: this.bucket,
             Key: file_key
         }).promise()
-        console.log(file)
         return file.Body as Buffer;
     }
 }

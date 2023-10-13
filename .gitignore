@@ -37,3 +37,6 @@ next-env.d.ts
 
 # pdfs
 *.pdf
+
+# temporary file dir 
+/temp

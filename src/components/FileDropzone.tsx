@@ -18,30 +18,52 @@ import {
     DialogHeader,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 import Link from 'next/link'
 import { Input } from "./ui/input"
+import { TFilebody } from '@/types'
+import { useMutation } from 'react-query'
 import { useToast } from "./ui/use-toast"
 import { useDropzone } from 'react-dropzone'
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from './LoadingSpinner'
-import s3WebService from "@/service/s3WebService"
-import { uploadFile } from '@/http'
+import { createVectors, uploadFile } from '@/http'
 
 
 export default function FileDropzone() {
 
     const { toast } = useToast()
-    const [isUploaded, setIsUploaded] = useState<boolean>(false)
+    const [file, setFile] = React.useState<File | null>(null)
+    // Mutations
+    const { isLoading: isFileUploading, isError: fileUploadError, isSuccess: fileUploadSuccess, mutate: fileUploadMutation, data: fileUploadReponse } = useMutation(
+        {
+            mutationFn: async (file: File) => {
+                return await uploadFile(file)
+            },
+            onSuccess: async (response) => {
+                vectorMutation({
+                    id: response.data.id,
+                    file_key: response.data.file_key,
+                    file_name: response.data.file_name,
+                })
+            }
+        }
+    )
+
+    const { isLoading: isCreatingVectors, isError: vectorError, mutate: vectorMutation, isSuccess: vectorSuccess, data: vectorResponse } = useMutation(
+        {
+            mutationFn: async ({ id, file_key, file_name }: TFilebody) => {
+                return await createVectors({ id, file_key, file_name })
+            },
+        }
+    )
 
     const onFileDrop = useCallback(async (acceptedFiles: File[]) => {
         let file: File = acceptedFiles[0]
         if (file.type === "application/pdf") {
+            setFile(file)
             try {
-                const response = await uploadFile(file)
-                // console.log(response.data)
-
-
+                fileUploadMutation(file)
             } catch (error) {
                 toast({
                     variant: "destructive",
@@ -59,11 +81,7 @@ export default function FileDropzone() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const { getRootProps, getInputProps, acceptedFiles, isDragActive } = useDropzone({
-        accept: {
-            "application/pdf": [".pdf"]
-        },
-        maxFiles: 1,
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop: onFileDrop,
     })
 
@@ -81,7 +99,7 @@ export default function FileDropzone() {
                 <DialogHeader>
                     <DialogDescription asChild>
                         {
-                            acceptedFiles.length === 0 ? (
+                            !file ? (
                                 <Card
                                     {...getRootProps()}
                                     className="w-full h-full flex flex-col items-center justify-center border outline-dotted cursor-pointer hover:outline-double"
@@ -110,50 +128,74 @@ export default function FileDropzone() {
                                     </CardContent>
                                 </Card>
                             ) : (
-                                isUploaded ? (
-                                    <Card
-                                        className="w-full h-full flex flex-col items-center justify-center border outline cursor-pointer"
-                                    >
-                                        <CardContent className="flex gap-2 flex-col items-center justify-center">
-                                            <div className="flex text-green-900 gap-2 items-center justify-center">
-                                                <BadgeCheck />
-                                                Uploaded successfully
-                                            </div>
-                                            <Button
-                                                asChild variant={"outline"}
-                                                className="flex gap-1 items-center justify-center border-2 text-gray-700 hover:text-gray-800"
+                                <>
+                                    {
+                                        isFileUploading && (
+                                            <Card
+                                                className="w-full h-full flex flex-col items-center justify-center border outline cursor-pointer"
                                             >
-                                                <Link href={`/documents/1234567ytrewq2345tgfd`} target="_blank">
-                                                    Start chatting with your pdf document
-                                                    <ArrowBigRight size={20} />
-                                                </Link>
-                                            </Button>
-                                        </CardContent>
-                                    </Card>
-                                ) : (
-                                    <Card
-                                        className="w-full h-full flex flex-col items-center justify-center border outline cursor-pointer"
-                                    >
-                                        <CardContent className="flex gap-2 flex-col items-center justify-center">
-                                            <div className="flex gap-2 items-center justify-center text-base">
-                                                <LoadingSpinner
-                                                    color="darkgray"
-                                                    classname="w-6 h-6"
-                                                />
-                                                Uploading
-                                            </div>
-                                            <p className="text-base text-blue-900">
-                                                {
-                                                    acceptedFiles[0].name.length >= 56 ? (
-                                                        acceptedFiles[0].name.slice(0, 50) + "...pdf"
-                                                    ) : (
-                                                        acceptedFiles[0].name
-                                                    )
-                                                }
-                                            </p>
-                                        </CardContent>
-                                    </Card>
-                                )
+                                                <CardContent className="flex gap-2 flex-col items-center justify-center">
+                                                    <div className="flex gap-2 items-center justify-center text-base">
+                                                        <LoadingSpinner
+                                                            color="darkgray"
+                                                            classname="w-6 h-6"
+                                                        />
+                                                        Uploading
+                                                    </div>
+                                                    <p className="text-base text-blue-900">
+                                                        {
+                                                            file.name.length >= 56 ? (
+                                                                file.name.slice(0, 50) + "...pdf"
+                                                            ) : (
+                                                                file.name
+                                                            )
+                                                        }
+                                                    </p>
+                                                </CardContent>
+                                            </Card>
+                                        )
+                                    }
+                                    {
+                                        isCreatingVectors && (
+                                            <Card
+                                                className="w-full h-full flex flex-col items-center justify-center border outline cursor-pointer"
+                                            >
+                                                <CardContent className="flex gap-2 flex-col items-center justify-center">
+                                                    <div className="flex gap-2 items-center justify-center">
+                                                        <LoadingSpinner
+                                                            color="darkgray"
+                                                            classname="w-6 h-6"
+                                                        />
+                                                        Spilling tea to GPT...
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        )
+                                    }
+                                    {
+                                        fileUploadSuccess && vectorSuccess && (
+                                            <Card
+                                                className="w-full h-full flex flex-col items-center justify-center border outline cursor-pointer"
+                                            >
+                                                <CardContent className="flex gap-2 flex-col items-center justify-center">
+                                                    <div className="flex text-green-900 gap-2 items-center justify-center">
+                                                        <BadgeCheck />
+                                                        Uploaded successfully
+                                                    </div>
+                                                    <Button
+                                                        asChild variant={"outline"}
+                                                        className="flex gap-1 items-center justify-center border-2 text-gray-700 hover:text-gray-800"
+                                                    >
+                                                        <Link href={`/documents/1234567ytrewq2345tgfd`} target="_blank">
+                                                            Start chatting with your pdf document
+                                                            <ArrowBigRight size={20} />
+                                                        </Link>
+                                                    </Button>
+                                                </CardContent>
+                                            </Card>
+                                        )
+                                    }
+                                </>
                             )
                         }
                     </DialogDescription>

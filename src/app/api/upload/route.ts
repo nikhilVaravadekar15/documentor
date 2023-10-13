@@ -1,39 +1,29 @@
 import path from "path"
-import { db } from "@/database/pg/index";
-import { documents, users } from "@/database/pg/schema";
+import { Session } from "next-auth";
 import { getAuthSession } from "@/lib/auth";
-import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import s3WebService from "@/service/s3WebService";
+import userService from "@/service/userService";
+import documentsService from "@/service/documentsService";
 
 
 export async function POST(nextRequest: NextRequest) {
 
-    // 1. check session     
-    const session = await getAuthSession()
-    if (!session) {
-        return new NextResponse(
-            JSON.stringify({
-                "message": "Unauthorized",
-            }),
-            {
-                status: 401,
-            }
-        );
-    }
-
     try {
+        // 1. check session     
+        const session: Session | null = await getAuthSession()
+        if (!session) {
+            throw new Error("Unauthorized", {
+                cause: "401"
+            })
+        }
+
         // 2. validate user 
-        const user = (await db.select().from(users).where(eq(users.email, session.user.email!)))[0]
+        const user = await userService.getUsersByEmail(session.user.email!)
         if (!user) {
-            return new NextResponse(
-                JSON.stringify({
-                    "message": "User does not exists",
-                }),
-                {
-                    status: 404,
-                }
-            );
+            throw new Error("User does not exists", {
+                cause: "404"
+            })
         }
 
         // 3. get file from user 
@@ -71,14 +61,11 @@ export async function POST(nextRequest: NextRequest) {
         }
         // 6. save file details to db
         else if (uploadResponse.file_name && uploadResponse.file_name && !uploadResponse.error) {
-            const docWritten = (await db.insert(documents).values([
-                {
-                    documentname: uploadResponse.file_key,
-                    key: uploadResponse.file_key,
-                    url: s3WebService.getS3Url(uploadResponse.file_key),
-                    userid: user.id,
-                }
-            ]).returning())[0]
+            const docWritten = await documentsService.createDocument({
+                file_name: uploadResponse.file_name,
+                file_key: uploadResponse.file_key,
+                userid: user.id!
+            })
             if (!docWritten) {
                 throw new Error()
             }
