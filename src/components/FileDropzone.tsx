@@ -18,59 +18,74 @@ import {
     DialogHeader,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import React, { useCallback } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import { Input } from "./ui/input"
 import { TFilebody } from '@/types'
-import { useMutation } from 'react-query'
 import { useToast } from "./ui/use-toast"
 import { useDropzone } from 'react-dropzone'
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from './LoadingSpinner'
 import { createVectors, uploadFile } from '@/http'
+import { useMutation, useQueryClient } from 'react-query'
 
 
 export default function FileDropzone() {
 
     const { toast } = useToast()
+    const queryClient = useQueryClient()
     const [file, setFile] = React.useState<File | null>(null)
-    // Mutations
-    const { isLoading: isFileUploading, isError: fileUploadError, isSuccess: fileUploadSuccess, mutate: fileUploadMutation, data: fileUploadReponse } = useMutation(
+
+    const fileUploadMutation = useMutation(
         {
             mutationFn: async (file: File) => {
                 return await uploadFile(file)
             },
             onSuccess: async (response) => {
-                vectorMutation({
+                vectorMutation.mutate({
                     id: response.data.id,
                     file_key: response.data.file_key,
                     file_name: response.data.file_name,
                 })
-            }
-        }
-    )
-
-    const { isLoading: isCreatingVectors, isError: vectorError, mutate: vectorMutation, isSuccess: vectorSuccess, data: vectorResponse } = useMutation(
-        {
-            mutationFn: async ({ id, file_key, file_name }: TFilebody) => {
-                return await createVectors({ id, file_key, file_name })
             },
-        }
-    )
-
-    const onFileDrop = useCallback(async (acceptedFiles: File[]) => {
-        let file: File = acceptedFiles[0]
-        if (file.type === "application/pdf") {
-            setFile(file)
-            try {
-                fileUploadMutation(file)
-            } catch (error) {
+            onError: (response) => {
+                setFile(null)
                 toast({
                     variant: "destructive",
                     title: "Oh oh! Something went wrong,",
                     description: "Please try again later.",
                 })
             }
+        }
+    )
+
+    const vectorMutation = useMutation(
+        {
+            mutationFn: async ({ id, file_key, file_name }: TFilebody) => {
+                return await createVectors({ id, file_key, file_name })
+            },
+            onSuccess: async (response) => {
+                console.log(response.data)
+            },
+            onError: (response) => {
+                setFile(null)
+                toast({
+                    variant: "destructive",
+                    title: "Oh oh! Something went wrong,",
+                    description: "Please try again later.",
+                })
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries({ queryKey: "documents" })
+            }
+        }
+    )
+
+    const onFileDrop = React.useCallback(async (acceptedFiles: File[]) => {
+        let file: File = acceptedFiles[0]
+        if (file.type === "application/pdf") {
+            setFile(file)
+            fileUploadMutation.mutate(file)
         } else {
             toast({
                 variant: "destructive",
@@ -90,7 +105,7 @@ export default function FileDropzone() {
             <DialogTrigger asChild>
                 <Button
                     variant={"outline"}
-                    className="group w-[256px] h-[169px] outline outline-gray-600 shadow-sm cursor-pointer hover:shadow-md hover:outline-gray-700"
+                    className="group w-[256px] h-[185px] outline outline-gray-600 shadow-sm cursor-pointer hover:shadow-md hover:outline-gray-700"
                 >
                     <PlusCircle size={32} className="text-gray-600 group-hover:text-gray-700" />
                 </Button>
@@ -130,7 +145,7 @@ export default function FileDropzone() {
                             ) : (
                                 <>
                                     {
-                                        isFileUploading && (
+                                        fileUploadMutation.isLoading && (
                                             <Card
                                                 className="w-full h-full flex flex-col items-center justify-center border outline cursor-pointer"
                                             >
@@ -156,7 +171,7 @@ export default function FileDropzone() {
                                         )
                                     }
                                     {
-                                        isCreatingVectors && (
+                                        vectorMutation.isLoading && (
                                             <Card
                                                 className="w-full h-full flex flex-col items-center justify-center border outline cursor-pointer"
                                             >
@@ -173,7 +188,7 @@ export default function FileDropzone() {
                                         )
                                     }
                                     {
-                                        fileUploadSuccess && vectorSuccess && (
+                                        fileUploadMutation.isSuccess && vectorMutation.isSuccess && (
                                             <Card
                                                 className="w-full h-full flex flex-col items-center justify-center border outline cursor-pointer"
                                             >
@@ -186,7 +201,12 @@ export default function FileDropzone() {
                                                         asChild variant={"outline"}
                                                         className="flex gap-1 items-center justify-center border-2 text-gray-700 hover:text-gray-800"
                                                     >
-                                                        <Link href={`/documents/1234567ytrewq2345tgfd`} target="_blank">
+                                                        <Link
+                                                            href={`/documents/1234567ytrewq2345tgfd`} target="_blank"
+                                                            onClick={() => {
+                                                                setFile(null)
+                                                            }}
+                                                        >
                                                             Start chatting with your pdf document
                                                             <ArrowBigRight size={20} />
                                                         </Link>

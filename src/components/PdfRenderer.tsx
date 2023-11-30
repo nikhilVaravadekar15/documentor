@@ -1,7 +1,6 @@
 "use client"
 
 import {
-    Loader2,
     Scaling,
     RotateCw,
     ChevronUp,
@@ -20,10 +19,6 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useState } from "react"
-// react-pdf
-import { Document, Page, pdfjs } from "react-pdf"
-import "react-pdf/dist/Page/TextLayer.css"
-import "react-pdf/dist/Page/AnnotationLayer.css"
 import { z } from "zod"
 import { cn } from "@/lib/utils"
 import { useFormik } from 'formik';
@@ -31,7 +26,11 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { useResizeDetector } from "react-resize-detector"
-import LoadingSpinner from "./LoadingSpinner"
+import LoadingSpinner from "@/components/LoadingSpinner"
+// react-pdf
+import { Document, Page, pdfjs } from "react-pdf"
+import "react-pdf/dist/Page/TextLayer.css"
+import "react-pdf/dist/Page/AnnotationLayer.css"
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`
@@ -39,7 +38,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 interface PdfRendererProps {
     url: string
 }
-
 
 export default function PdfRenderer({ url }: PdfRendererProps) {
     const { toast } = useToast()

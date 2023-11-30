@@ -2,7 +2,7 @@
 import { db } from "@/database/pg";
 import { documents } from "@/database/pg/schema";
 import s3WebService from "./s3WebService";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 class DocumentsService {
     constructor() { }
@@ -24,6 +24,18 @@ class DocumentsService {
         documentid: string
     ) {
         return (await db.select().from(documents).where(eq(documents.id, documentid)))[0]
+    }
+
+    async deleteDocumentById(
+        documentid: string
+    ) {
+        return (await db.delete(documents).where(eq(documents.id, documentid)).returning())[0]
+    }
+
+    async getDocumentsByUser(
+        userid: string
+    ) {
+        return (await db.select().from(documents).where(eq(documents.userid, userid)).orderBy(desc(documents.created_at)))
     }
 
 }

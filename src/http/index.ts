@@ -1,5 +1,6 @@
 import { TFilebody } from "@/types";
 import axios, { AxiosRequestConfig } from "axios";
+import { string } from "zod";
 
 export const API_BASE_URL: string = process.env.NEXT_PUBLIC_BASE_URL!
 export const axiosRequestConfig: AxiosRequestConfig = {
@@ -15,7 +16,7 @@ export async function uploadFile(file: File) {
     const formData = new FormData()
     formData.set('file', file)
     return await axios.post(
-        '/api/upload',
+        '/api/document',
         formData,
         {
             ...axiosRequestConfig,
@@ -35,6 +36,27 @@ export async function createVectors({ id, file_key, file_name }: TFilebody) {
             file_key: file_key,
             file_name: file_name,
         },
+        axiosRequestConfig
+    )
+}
+
+export async function getDocuments() {
+    return await axios.get(
+        '/api/list-documents',
+        axiosRequestConfig
+    )
+}
+
+export async function deleteDocument(id: string) {
+    return await axios.delete(
+        `/api/document?id=${id}`,
+        axiosRequestConfig
+    )
+}
+
+export async function getDocumentbyId(id: string) {
+    return await axios.get(
+        `/api/document?id=${id}`,
         axiosRequestConfig
     )
 }

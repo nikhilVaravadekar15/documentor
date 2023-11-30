@@ -5,7 +5,7 @@ import {
 } from "@pinecone-database/doc-splitter"
 import { TPdfPage } from "@/types";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
-
+import { truncateStringByBytes } from "@/lib/utils";
 
 class PdfService {
     constructor() { }
@@ -16,28 +16,22 @@ class PdfService {
         return pages
     }
 
-    async truncateStringByBytes(text: string, bytes: number) {
-        const encoder = new TextEncoder();
-        return new TextDecoder().decode(encoder.encode(text).slice(0, bytes));
-    }
-
     async prepareSplittedDocument(page: TPdfPage) {
         let { pageContent, metadata } = page
-        pageContent = pageContent.replace(/\n/g, "")
+        pageContent = pageContent.replace(/\n/g, " ")
         // split the page content into multiple documents
         const splitter = new RecursiveCharacterTextSplitter()
-        const documents = splitter.splitDocuments([
+        const documents = await splitter.splitDocuments([
             new Document({
                 pageContent: pageContent,
                 metadata: {
                     loc: {
                         pageNumber: metadata.loc.pageNumber!,
-                        text: this.truncateStringByBytes(pageContent, 36000)
+                        text: truncateStringByBytes(pageContent, 36000)
                     }
                 }
             })
         ])
-
         return documents
     }
 

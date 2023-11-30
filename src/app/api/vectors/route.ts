@@ -8,6 +8,8 @@ import userService from "@/service/userService";
 import s3WebService from "@/service/s3WebService";
 import documentsService from "@/service/documentsService";
 import { NextRequest, NextResponse } from "next/server";
+import embeddingService from "@/service/embeddingService";
+import pineconeService from "@/service/pineconeService";
 
 
 export async function POST(nextRequest: NextRequest, nextResponse: NextResponse) {
@@ -71,11 +73,16 @@ export async function POST(nextRequest: NextRequest, nextResponse: NextResponse)
         // 10. split and segment pages 
         const segmentedDocument = await Promise.all(pages.map(pdfservice.prepareSplittedDocument))
 
+        // # ISSUE -  code: 'rate_limit_exceeded'
         // 11. create vector embedding of individual documents 
+        const vectors = await Promise.all(segmentedDocument.flat().map((document) => embeddingService.embedDocument(document)));
+
+        // // 12. save vectors to pinecone database
+        // await pineconeService.saveVectors(body.file_name, vectors)
 
         return new NextResponse(
             JSON.stringify({
-                message: "lets create vectors",
+                message: "vectors created",
             }),
             {
                 status: 200,
