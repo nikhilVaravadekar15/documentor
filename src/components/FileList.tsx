@@ -9,21 +9,31 @@ import {
 import React from "react"
 import Link from "next/link"
 import { Trash2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { deleteDocument, getDocuments } from '@/http';
 import LoadingSpinner from "@/components/LoadingSpinner"
 import { useMutation, useQuery, useQueryClient } from 'react-query'
+import { signOut } from "next-auth/react"
 
 
 type Props = {}
 
 export default function FileList({ }: Props) {
 
+    const router = useRouter()
     const query = useQuery({
         queryKey: "documents",
         queryFn: async () => {
             return await getDocuments()
+        },
+        onError: (error: any) => {
+            if (error?.response?.status === 401 || error?.response?.status === 404) {
+                signOut({
+                    callbackUrl: "/"
+                })
+            }
         }
     })
 

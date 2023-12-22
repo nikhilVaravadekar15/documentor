@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "71197ba9-e7f3-46cd-814c-b5acc665a275",
+  "id": "96e721a2-b472-42f3-a6ef-43256f1d04d6",
   "prevId": "3773dbd4-ea0d-47d3-ab0e-99eed97c2fd9",
   "tables": {
     "account": {
@@ -196,7 +196,7 @@
         },
         "role": {
           "name": "role",
-          "type": "role",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -354,13 +354,6 @@
     }
   },
   "enums": {
-    "role": {
-      "name": "role",
-      "values": {
-        "gpt": "gpt",
-        "user": "user"
-      }
-    },
     "tier": {
       "name": "tier",
       "values": {

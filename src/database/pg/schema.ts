@@ -11,11 +11,6 @@ import {
 import type { AdapterAccount } from "@auth/core/adapters"
 
 
-export const roleEnum = pgEnum(
-    "role",
-    ["gpt", "user"]
-);
-
 export const tierEnum = pgEnum(
     "tier",
     ["free", "premium"]
@@ -96,7 +91,7 @@ export const messages = pgTable(
         id: serial("id").primaryKey().notNull(),
         documentid: uuid("documentid").notNull().references(() => documents.id),
         content: text("content").notNull(),
-        role: roleEnum("role").notNull(),
+        role: text("role").notNull(),
         created_at: timestamp("created_at").notNull().defaultNow(),
     }
 );

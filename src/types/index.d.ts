@@ -13,3 +13,8 @@ export type TPdfPage = {
         }
     }
 }
+
+export type TQualifyingDocumentMetadata = {
+    text: string;
+    pageNumber: number;
+};

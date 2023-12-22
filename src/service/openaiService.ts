@@ -2,10 +2,13 @@
 import md5 from "md5"
 import { PineconeRecord } from "@pinecone-database/pinecone";
 import { Document } from "@pinecone-database/doc-splitter";
-import { OpenAIApi, Configuration, ResponseTypes, ErrorResponse } from "openai-edge"
+import {
+    OpenAIApi, Configuration, ResponseTypes, ErrorResponse,
+    ChatCompletionRequestMessage
+} from "openai-edge"
 
 
-class EmbeddingService {
+class OpenaiService {
     private openai: OpenAIApi | null = null;
 
     constructor() {
@@ -25,11 +28,11 @@ class EmbeddingService {
         }
     }
 
-    async createEmbedding(document: Document) {
+    async createEmbedding(content: string) {
 
         const response = await this.openai?.createEmbedding({
             model: "text-embedding-ada-002",
-            input: document.pageContent,
+            input: content,
         })
         if (response?.status != 200) {
             const result = await response?.json() as ErrorResponse
@@ -44,7 +47,7 @@ class EmbeddingService {
     async embedDocument(document: Document) {
 
         const hash: string = md5(document.pageContent)
-        const embedding: number[] = await this.createEmbedding(document)
+        const embedding: number[] = await this.createEmbedding(document.pageContent)
 
         return {
             id: hash,
@@ -56,7 +59,18 @@ class EmbeddingService {
         } as PineconeRecord
 
     }
+
+    async chatCompletion(messages: Array<ChatCompletionRequestMessage>) {
+
+        return await this.openai?.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: messages,
+            stream: true
+        }) as Response
+
+    }
+
 }
 
 
-export default new EmbeddingService();
+export default new OpenaiService();

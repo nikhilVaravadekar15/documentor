@@ -9,6 +9,7 @@ ALTER TABLE "messages" DROP CONSTRAINT "messages_messageid_documents_id_fk";
 --> statement-breakpoint
 ALTER TABLE "documents" ALTER COLUMN "id" SET DATA TYPE uuid;--> statement-breakpoint
 ALTER TABLE "documents" ALTER COLUMN "id" SET DEFAULT gen_random_uuid();--> statement-breakpoint
+ALTER TABLE "messages" ALTER COLUMN "role" SET DATA TYPE text;--> statement-breakpoint
 ALTER TABLE "messages" ALTER COLUMN "documentid" SET DATA TYPE uuid;--> statement-breakpoint
 ALTER TABLE "user" ADD COLUMN "tier" "tier" DEFAULT 'free' NOT NULL;--> statement-breakpoint
 DO $$ BEGIN

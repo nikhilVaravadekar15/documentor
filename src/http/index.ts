@@ -60,3 +60,13 @@ export async function getDocumentbyId(id: string) {
         axiosRequestConfig
     )
 }
+
+export async function getMessageByDocumentId(documentid: string) {
+    return await axios.post(
+        "/api/messages",
+        {
+            documentid: documentid
+        },
+        axiosRequestConfig
+    )
+}

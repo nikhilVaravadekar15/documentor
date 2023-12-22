@@ -8,7 +8,7 @@ import userService from "@/service/userService";
 import s3WebService from "@/service/s3WebService";
 import documentsService from "@/service/documentsService";
 import { NextRequest, NextResponse } from "next/server";
-import embeddingService from "@/service/embeddingService";
+import openaiService from "@/service/openaiService";
 import pineconeService from "@/service/pineconeService";
 
 
@@ -75,7 +75,7 @@ export async function POST(nextRequest: NextRequest, nextResponse: NextResponse)
 
         // # ISSUE -  code: 'rate_limit_exceeded'
         // 11. create vector embedding of individual documents 
-        const vectors = await Promise.all(segmentedDocument.flat().map((document) => embeddingService.embedDocument(document)));
+        const vectors = await Promise.all(segmentedDocument.flat().map((document) => openaiService.embedDocument(document)));
 
         // // 12. save vectors to pinecone database
         // await pineconeService.saveVectors(body.file_name, vectors)

@@ -1,12 +1,12 @@
 "use client"
 
 import React from 'react'
-import Qna from '@/components/Qna';
+import Chat from '@/components/Chat';
 import { useQuery } from 'react-query';
 import { getDocumentbyId } from '@/http';
+import { useRouter } from 'next/navigation';
 import PdfRenderer from '@/components/PdfRenderer';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { useRouter } from 'next/navigation';
 
 
 type Props = {
@@ -39,7 +39,10 @@ export default function PdfQna({ slug }: Props) {
                             <PdfRenderer url={query.data?.data?.document?.url} />
                         </div>
                         <div className="h-[50%] w-full border md:h-full md:w-[50%]">
-                            <Qna />
+                            <Chat
+                                documentid={query.data?.data?.document?.id}
+                                filekey={query.data?.data?.document?.key}
+                            />
                         </div>
                     </>
                 )

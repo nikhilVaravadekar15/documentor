@@ -10,7 +10,7 @@ export async function truncateStringByBytes(text: string, bytes: number) {
   return new TextDecoder().decode(encoder.encode(text).slice(0, bytes));
 }
 
-export async function convertToAscii(text: string) {
+export function convertToAscii(text: string) {
   // remove non-ascii characters
   return text.replace(/[^\x00-\x7F]/g, "");
 }
