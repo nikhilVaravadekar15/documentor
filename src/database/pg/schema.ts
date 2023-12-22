@@ -11,11 +11,6 @@ import {
 import type { AdapterAccount } from "@auth/core/adapters"
 
 
-export const tierEnum = pgEnum(
-    "tier",
-    ["free", "premium"]
-);
-
 export const users = pgTable(
     "user",
     {
@@ -23,8 +18,7 @@ export const users = pgTable(
         name: text("name"),
         email: text("email").notNull(),
         emailVerified: timestamp("emailVerified", { mode: "date" }),
-        image: text("image"),
-        tier: tierEnum("tier").notNull().default("free")
+        image: text("image")
     }
 );
 

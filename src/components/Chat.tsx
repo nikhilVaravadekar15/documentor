@@ -24,6 +24,7 @@ type Props = {
 export default function Chat({ documentid, filekey }: Props) {
 
     const { data: session, status } = useSession()
+    const lastMessageRef = React.useRef<HTMLDivElement>(null);
     const { data: response, isLoading } = useQuery("messages", async () => {
         return await getMessageByDocumentId(documentid)
     })
@@ -36,6 +37,12 @@ export default function Chat({ documentid, filekey }: Props) {
         },
         initialMessages: response?.data.messages || []
     })
+
+    React.useEffect(() => {
+        if (lastMessageRef.current) {
+            lastMessageRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
     return (
         <div className="relative flex-grow h-full w-full flex flex-col">
@@ -58,6 +65,7 @@ export default function Chat({ documentid, filekey }: Props) {
                                         return (
                                             <div
                                                 key={message.id}
+                                                ref={index === messages.length - 1 ? lastMessageRef : null}
                                                 className={cn(
                                                     "p-4 w-full",
                                                     message.role === "user" ? "bg-slate-50" : "bg-blue-100"

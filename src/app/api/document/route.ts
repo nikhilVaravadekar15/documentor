@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import s3WebService from "@/service/s3WebService";
 import userService from "@/service/userService";
 import documentsService from "@/service/documentsService";
+import pineconeService from "@/service/pineconeService";
 
 
 export async function GET(nextRequest: NextRequest, nextResponse: NextResponse) {
@@ -106,11 +107,9 @@ export async function DELETE(nextRequest: NextRequest, nextResponse: NextRespons
         // 5. delete document from s3 bucket
         await s3WebService.deleteFileFroms3(document.key!)
 
-        // # TODO 
         // 6. delete vector for the document from pinecone
+        await pineconeService.deleteVectors(document.key)
 
-
-        console.log(document, "deleted successfully.")
         return new Response(
             JSON.stringify(
                 {
@@ -171,19 +170,11 @@ export async function POST(nextRequest: NextRequest, nextResponse: NextResponse)
                 cause: "400"
             })
         }
-        if (user.tier === "premium") {
-            if (file.size > parseInt(process.env.TIER_PREMIUM_FILE_SIZE_LIMIT!)) {
-                throw new Error("File size too large, please try again.", {
-                    cause: "401"
-                })
-            }
-        }
-        if (user.tier === "free") {
-            if (file.size > parseInt(process.env.TIER_FREE_FILE_SIZE_LIMIT!)) {
-                throw new Error("File size too large, please try again.", {
-                    cause: "401"
-                })
-            }
+
+        if (file.size > parseInt(process.env.FILE_SIZE_LIMIT!)) {
+            throw new Error("File size too large, please try again.", {
+                cause: "401"
+            })
         }
 
         // 5. upload file to s3 
@@ -203,7 +194,6 @@ export async function POST(nextRequest: NextRequest, nextResponse: NextResponse)
             }
 
             // 7. return file details to use
-            console.log(docWritten, "uploaded successfully.")
             return new NextResponse(
                 JSON.stringify({
                     id: docWritten.id,

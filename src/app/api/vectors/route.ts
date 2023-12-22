@@ -78,7 +78,7 @@ export async function POST(nextRequest: NextRequest, nextResponse: NextResponse)
         const vectors = await Promise.all(segmentedDocument.flat().map((document) => openaiService.embedDocument(document)));
 
         // // 12. save vectors to pinecone database
-        // await pineconeService.saveVectors(body.file_name, vectors)
+        await pineconeService.saveVectors(body.file_name, vectors)
 
         return new NextResponse(
             JSON.stringify({

@@ -47,6 +47,12 @@ class PineconeService {
         }
     }
 
+    async deleteVectors(filename: string) {
+        const namespace: string = convertToAscii(filename)
+        const nsindex = this.pineconeIndex?.namespace(namespace);
+        return await nsindex?.deleteAll()
+    }
+
     async getContext(query: string, fileKey: string) {
         const queryEmbeddings = await openaiService.createEmbedding(query);
         const matches = await this.getMatchesFromEmbeddings(fileKey, queryEmbeddings);
@@ -59,7 +65,6 @@ class PineconeService {
             return (match.metadata as TQualifyingDocumentMetadata).text
         });
 
-        // 5 vectors
         return docs?.join("\n").substring(0, 3000);
 
     }
